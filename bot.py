@@ -38,7 +38,8 @@ def format_poem(poem: dict) -> str:
     verses = "\n".join(poem["verses"])
     summary_part = ""
     if poem.get("summary"):
-        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n_{poem['summary']}_"
+        summary = poem["summary"].removeprefix("هوش مصنوعی:").strip()
+        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n_{summary}_"
     return (
         f"📜 *رباعی خیام*\n\n"
         f"{verses}"
