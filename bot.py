@@ -27,16 +27,23 @@ def load_poems() -> list[dict]:
         return json.load(f)["poems"]
 
 
+_PERSIAN = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+
+
+def _fa(n: int) -> str:
+    return str(n).translate(_PERSIAN)
+
+
 def format_poem(poem: dict) -> str:
     verses = "\n".join(poem["verses"])
     summary_part = ""
     if poem.get("summary"):
-        summary_part = f"\n━━━━━━━━━━━━━━━\n💭 {poem['summary']}"
+        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n_{poem['summary']}_"
     return (
         f"📜 *رباعی خیام*\n\n"
         f"{verses}"
         f"{summary_part}\n\n"
-        f"_رباعی {poem['index']} از ۱۷۸_"
+        f"〰 _{_fa(poem['index'])} از ۱۷۸_"
     )
 
 
