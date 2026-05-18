@@ -1,0 +1,15 @@
+[Unit]
+Description=Khayyam Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=sahand
+WorkingDirectory=/home/sahand/khayyam
+EnvironmentFile=/home/sahand/khayyam/.env
+ExecStart=/home/sahand/khayyam/venv/bin/python bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
