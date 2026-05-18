@@ -111,6 +111,25 @@ async def cmd_poem(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+# ── Lifecycle hooks — run inside the bot's event loop ────────────────────────
+
+async def post_init(app: Application) -> None:
+    await db.init_db()
+
+    scheduler = AsyncIOScheduler(timezone=TEHRAN)
+    scheduler.add_job(broadcast, trigger="cron", hour=10, minute=0, args=[app])
+    scheduler.start()
+    app.bot_data["scheduler"] = scheduler
+
+    logger.info("DB ready. Scheduler started — daily at 10:00 IRST.")
+
+
+async def post_shutdown(app: Application) -> None:
+    scheduler = app.bot_data.get("scheduler")
+    if scheduler and scheduler.running:
+        scheduler.shutdown(wait=False)
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -121,27 +140,21 @@ def main() -> None:
     if not POEMS_FILE.exists():
         raise RuntimeError("poems.json not found — run scraper.py first")
 
-    app = Application.builder().token(token).build()
+    app = (
+        Application.builder()
+        .token(token)
+        .post_init(post_init)
+        .post_shutdown(post_shutdown)
+        .build()
+    )
 
     app.add_handler(CommandHandler("start", cmd_start))
     app.add_handler(CommandHandler("stop", cmd_stop))
     app.add_handler(CommandHandler("poem", cmd_poem))
 
-    scheduler = AsyncIOScheduler(timezone=TEHRAN)
-    scheduler.add_job(
-        broadcast,
-        trigger="cron",
-        hour=10,
-        minute=0,
-        args=[app],
-    )
-    scheduler.start()
-
-    logger.info("Bot started. Scheduler running — daily at 10:00 IRST.")
+    logger.info("Bot starting…")
     app.run_polling(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(db.init_db())
     main()
