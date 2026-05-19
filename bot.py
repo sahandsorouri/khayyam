@@ -41,7 +41,7 @@ def format_poem(poem: dict) -> str:
     summary_part = ""
     if poem.get("summary"):
         summary = escape(poem["summary"].removeprefix("هوش مصنوعی:").strip())
-        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n<tg-spoiler><i>{summary}</i></tg-spoiler>"
+        summary_part = f"\n\n<blockquote expandable>{summary}</blockquote>"
     return (
         f"📜 <b>رباعی خیام</b>\n\n"
         f"{verses}"
