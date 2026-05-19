@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from html import escape
+
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -35,16 +37,16 @@ def _fa(n: int) -> str:
 
 
 def format_poem(poem: dict) -> str:
-    verses = "\n".join(poem["verses"])
+    verses = escape("\n".join(poem["verses"]))
     summary_part = ""
     if poem.get("summary"):
-        summary = poem["summary"].removeprefix("هوش مصنوعی:").strip()
-        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n_{summary}_"
+        summary = escape(poem["summary"].removeprefix("هوش مصنوعی:").strip())
+        summary_part = f"\n\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n<tg-spoiler><i>{summary}</i></tg-spoiler>"
     return (
-        f"📜 *رباعی خیام*\n\n"
+        f"📜 <b>رباعی خیام</b>\n\n"
         f"{verses}"
         f"{summary_part}\n\n"
-        f"〰 _{_fa(poem['index'])} از ۱۷۸_"
+        f"〰 <i>{_fa(poem['index'])} از ۱۷۸</i>"
     )
 
 
@@ -71,7 +73,7 @@ async def broadcast(app: Application) -> None:
             await app.bot.send_message(
                 chat_id=chat_id,
                 text=text,
-                parse_mode=ParseMode.MARKDOWN,
+                parse_mode=ParseMode.HTML,
             )
         except Exception as e:
             logger.warning(f"Failed to send to {chat_id}: {e}")
@@ -115,7 +117,7 @@ async def cmd_poem(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     poem = await pick_random_poem(poems)
     await update.message.reply_text(
         format_poem(poem),
-        parse_mode=ParseMode.MARKDOWN,
+        parse_mode=ParseMode.HTML,
     )
 
 
