@@ -43,10 +43,10 @@ def format_poem(poem: dict) -> str:
         summary = escape(poem["summary"].removeprefix("هوش مصنوعی:").strip())
         summary_part = f"\n\n<blockquote expandable>{summary}</blockquote>"
     return (
-        f"📜 <b>رباعی خیام</b>\n\n"
+        f"📜 <b>رباعی خیام</b>\n"
+        f"〰 <i>{_fa(poem['index'])} از ۱۷۸</i>\n\n"
         f"{verses}"
-        f"{summary_part}\n\n"
-        f"〰 <i>{_fa(poem['index'])} از ۱۷۸</i>"
+        f"{summary_part}"
     )
 
 
